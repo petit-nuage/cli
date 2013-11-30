@@ -25,7 +25,7 @@ HOST_STAGE = "dev.darkelda.com"
 HOST_MASTER = "back.w-s.re"
 
 
-def workspace_exists(workspace_path):
+def exists(workspace_path):
     """
     Workspace exists
     branch
@@ -61,7 +61,7 @@ def create(branch="develop"):
         branch_slug = branch.replace("/", "_")
         workspace_path = WORKSPACE_DIR + "/" + branch_slug
 
-        if workspace_exists(workspace_path):
+        if exists(workspace_path):
             utils.puts("%s exists" % workspace_path)
             return False
 
@@ -70,7 +70,7 @@ def create(branch="develop"):
                 return api.run("mkdir %s" % branch_slug)
 
 
-def workspace_delete(branch="develop"):
+def delete(branch="develop"):
     """
     Workspace delete
     workspace
@@ -86,7 +86,7 @@ def workspace_delete(branch="develop"):
         branch_slug = branch.replace("/", "_")
         workspace_path = WORKSPACE_DIR + "/" + branch_slug
 
-        if not workspace_exists(workspace_path):
+        if not exists(workspace_path):
             utils.puts("%s doesn't exist" % workspace_path)
             return False
 
@@ -95,7 +95,7 @@ def workspace_delete(branch="develop"):
                 return api.run("rm -Rf %s" % branch_slug)
 
 
-def workspace_synchronize(branch="develop"):
+def synchronize(branch="develop"):
     """
         Workspace synchronize
         workspace
@@ -110,7 +110,7 @@ def workspace_synchronize(branch="develop"):
         branch_slug = branch.replace("/", "_")
         workspace_path = WORKSPACE_DIR + "/" + branch_slug
 
-        if not workspace_exists(workspace_path):
+        if not exists(workspace_path):
             utils.puts("%s doesn't exist" % workspace_path)
             return False
 
