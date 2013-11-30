@@ -2,6 +2,11 @@
 
 ## Requirements
 
+- Python 2.7
+- Fabric
+
+- Docker 0.7
+
 - PHP 5.3
 - PEAR Installer
 - PHPUnit
@@ -9,7 +14,8 @@
 - PHP Code Sniffer
 - PHPLOC
 - PHP Copy,Paste Detector (PHPCPD)
-- Beanstalkd 1.4.6
+
+
 
 ### PEAR Installer
 
