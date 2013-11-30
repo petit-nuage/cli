@@ -1,7 +1,7 @@
 from optparse import OptionParser
 import glob
 import os
-from bin import workspace
+from flow import workspace
 
 
 def main():
