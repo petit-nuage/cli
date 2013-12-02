@@ -6,6 +6,7 @@ import sys
 
 from git import *
 #from fabric.colors import red, green, blue, white
+from fabric import utils
 from fabric.colors import *
 
 import flow
@@ -39,7 +40,7 @@ def parse_json(filename):
             content = content[:match.start()] + content[match.end():]
             match = comment_re.search(content)
 
-        pprint.pprint(json.loads(content))
+        #pprint.pprint(json.loads(content))
 
         # Return json file
         return json.loads(content)
@@ -66,36 +67,55 @@ def test(branch):
     pass
 
 
-def stage(branch):
+def stage(configuration, branch="develop"):
     """
     Create or synchronise stage environment on branch
     """
 
-    # Check workspace existance
-    if not flow.workspace.exists("stage", branch):
-        print yellow("stage: workspace for %s branch does not exist" % branch)
-        print blue("stage: create workspace for %s branch" % branch)
+    # Check workspace existence
+    if not flow.workspace.exists(configuration, "stage", branch):
+        print utils.puts(yellow("stage: workspace for %s does not exist" % branch))
+        print blue("stage: create workspace for %s" % branch)
 
         # Create workspace
-        if not flow.workspace.create("stage", branch):
-            print red("stage: unable to create workspace for %s branch" % branch)
+        if not flow.workspace.create(configuration, "stage", branch):
+            print red("stage: unable to create workspace for %s" % branch)
             return False
 
         print green("stage: workspace for %s branch created" % branch)
 
         # Bake configuration
-        if not flow.baker.configure():
-            print red("stage: can not install configuration for %s branch" % branch)
+        if not flow.baker.configure("stage"):
+            print red("stage: can not install configuration for %s" % branch)
             return False
 
-        print green("stage: configuration installed for %s branch created" % branch)
+        print green("stage: configuration installed for %s created" % branch)
 
-    if flow.repository.synchronise("stage", branch):
-        print green("stage: %s branch synchronised" % branch)
+    utils.puts(blue("stage: synchronize repository for %s" % branch))
+
+    if flow.repository.synchronize(configuration, "stage", branch):
+        print utils.puts(green("stage: %s synchronized" % branch))
+        return False
+
     else:
-        print red("stage: can not synchronise %s branch" % branch)
+        print red("stage: can not synchronize %s" % branch)
+        return True
 
-    pass
+
+def unstage(configuration, branch="develop"):
+    """
+    Remove stage environment on branch
+    """
+
+    # Check workspace existence
+    if not flow.workspace.exists(configuration, "stage", branch):
+        return False
+
+    # Remove workspace
+    if not flow.workspace.delete(configuration, "stage", branch):
+        return False
+
+    return True
 
 
 def main():
@@ -136,19 +156,25 @@ The most commonly command used flow commands are:\n\
     branch = args[1]
 
     # check command
-    if command not in ["build", "deploy", "stage", "test"]:
+    if command not in ["build", "deploy", "stage", "test", "unstage"]:
         print parser.usage
         sys.exit(1)
 
     # Run task
     if command == "build":
-        return build(branch)
+        return build(config, branch)
+
     elif command == "deploy":
-        return deploy()
-    elif command == "test":
-        return test(branch)
+        return deploy(config)
+
     elif command == "stage":
-        return stage(branch)
+        return stage(config, branch)
+
+    elif command == "test":
+        return test(config, branch)
+
+    elif command == "unstage":
+        return unstage(config, branch)
 
 
 # Run main function

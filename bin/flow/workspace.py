@@ -1,46 +1,55 @@
 import os
 import sys
-from fabric import api, utils
+from fabric import api, colors, utils
+import fabric.contrib.files as ffiles
+
+import pprint
 
 # Environment information
 api.env.use_ssh_config = True
-api.env.roledefs = {
-    'local': ['localhost'],
-    'test': ['jenkins.app.darkelda.com'],
-    'stage': ['www-data@dev.darkelda.com'],
-    'master': ['www-data@back.w-s.re']
-}
-
-# App information
-REMOTE_URL = "git@bitbucket.org:nicolas_ramy/ws-backend.git"
-
-WORKSPACE_DIR = "/var/www/ws-back"
-DOMAIN_AVAILABLE_DIR = "/etc/nginx/sites-available"
-DOMAIN_ENABLED_DIR = "/etc/nginx/sites-enabled"
-
-HOST_STAGE = "dev.darkelda.com"
-HOST_MASTER = "back.w-s.re"
 
 
-def exists(workspace_path):
+def get_workspace_path(configuration, env):
+    return str(configuration[env]["workspace"] + "/" + configuration["project"]["name"])
+
+
+def get_branch_slug(branch):
+    return branch.replace("/", "_")
+
+
+def load_configuration(configuration, env):
+    api.env.role = env
+    api.env.roledefs = configuration["roles"]
+    api.env.hosts = str(configuration[env]["host"])
+    api.env.host_string = str(configuration[env]["host"])
+    return api
+
+
+def exists(configuration, env, branch="develop"):
     """
     Workspace exists
     branch
 
     dist
-    Test workspace existance
+    Test workspace existence
     """
-    if len(api.env.roles) == 0 or "local" in api.env.roles:
+
+    #Load configuration
+    api = load_configuration(configuration, env)
+    branch_slug = get_branch_slug(branch)
+    workspace_path = get_workspace_path(configuration, env)
+
+    if api.env.role == "local":
         return False
 
     else:
         if not workspace_path:
             return False
         else:
-            return contrib.files.exists(workspace_path)
+            return ffiles.exists(workspace_path + "/" + branch_slug)
 
 
-def create(branch="develop"):
+def create(configuration, env, branch="develop"):
     """
     Workspace create
     workspace
@@ -49,24 +58,26 @@ def create(branch="develop"):
     Test and create workspace
     """
 
-    if len(api.env.roles) == 0 or "local" in api.env.roles:
+    #Load configuration
+    api = load_configuration(configuration, env)
+    branch_slug = get_branch_slug(branch)
+    workspace_path = get_workspace_path(configuration, env)
+
+    if api.env.role == "local":
         utils.puts("Nothing to do here...")
         return False
 
     else:
-        branch_slug = branch.replace("/", "_")
-        workspace_path = WORKSPACE_DIR + "/" + branch_slug
-
-        if exists(workspace_path):
-            utils.puts("%s exists" % workspace_path)
+        if exists(configuration, env, branch):
+            utils.puts("%s exists" % branch)
             return False
 
         else:
-            with api.cd(WORKSPACE_DIR):
+            with api.cd(workspace_path):
                 return api.run("mkdir %s" % branch_slug)
 
 
-def delete(branch="develop"):
+def delete(configuration, env, branch="develop"):
     """
     Workspace delete
     workspace
@@ -74,24 +85,30 @@ def delete(branch="develop"):
     dist
     Test and delete workspace
     """
-    if len(api.env.roles) == 0 or "local" in api.env.roles:
-        print "Nothing to do here..."
+
+    #Load configuration
+    api = load_configuration(configuration, env)
+    branch_slug = get_branch_slug(branch)
+    workspace_path = get_workspace_path(configuration, env)
+
+    if api.env.role == "local":
+        utils.puts(green("Nothing to do here..."))
         return False
 
     else:
-        branch_slug = branch.replace("/", "_")
-        workspace_path = WORKSPACE_DIR + "/" + branch_slug
 
-        if not exists(workspace_path):
-            utils.puts("%s doesn't exist" % workspace_path)
-            return False
+        if exists(configuration, env, branch):
+            utils.puts(colors.green("workspace for %s exists" % branch))
+
+            with api.cd(workspace_path):
+                api.run("rm -Rf %s" % branch_slug)
+                return True
 
         else:
-            with api.cd(WORKSPACE_DIR):
-                return api.run("rm -Rf %s" % branch_slug)
+            return False
 
 
-def synchronize(branch="develop"):
+def synchronize(configuration, env, branch="develop"):
     """
         Workspace synchronize
         workspace
@@ -99,16 +116,4 @@ def synchronize(branch="develop"):
         dist
         Synchronize workspace
     """
-    if len(api.env.roles) == 0 or "local" in api.env.roles:
-        return git_pull(branch)
-
-    else:
-        branch_slug = branch.replace("/", "_")
-        workspace_path = WORKSPACE_DIR + "/" + branch_slug
-
-        if not exists(workspace_path):
-            utils.puts("%s doesn't exist" % workspace_path)
-            return False
-
-        else:
-            return git_pull(branch, workspace_path)
+    pass
