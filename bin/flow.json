@@ -1,0 +1,28 @@
+{
+	"project": {
+		"name": "example",
+		"repository": "git@domain.dev:example.git"
+	},
+	"stage": {
+		"host": "www-data@domain.dev",
+		"workspace": "/var/www/example/",
+		"app": {
+			"type": "cakephp",
+			"web": "nginx_phpfpm",
+			"databases": {
+				"default": {
+					"hostname": "localhost",
+					"username": "root",
+					"password": "",
+					"port": 3306,
+				},
+				"couchdb": {
+					"hostname": "localhost",
+					"username": "",
+					"password": "",
+					"port": 5984,
+				}
+			}
+		}
+	}
+}

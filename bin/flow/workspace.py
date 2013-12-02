@@ -2,9 +2,6 @@ import os
 import sys
 from fabric import api, utils
 
-
-#print dir(fabric)
-
 # Environment information
 api.env.use_ssh_config = True
 api.env.roledefs = {
@@ -34,7 +31,6 @@ def exists(workspace_path):
     Test workspace existance
     """
     if len(api.env.roles) == 0 or "local" in api.env.roles:
-        nothing_to_do()
         return False
 
     else:
