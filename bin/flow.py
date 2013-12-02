@@ -10,57 +10,39 @@ from fabric.colors import *
 
 import flow
 
+import pprint
 
-def main():
-    parser = OptionParser()
+# Parse a JSON file with comments
+# http://www.lifl.fr/~riquetd/parse-a-json-file-with-comments.html
 
-    parser.usage = "flow <command> [<branch>]\n\n\
-The most commonly command used flow commands are:\n\
-    build   Build package based on branch\n\
-    deploy  Deploy master branch to production\n\
-    test    Test a branch\n\
-    stage   Create or synchronise stage environment on branch"
+# Regular expression for comments
+comment_re = re.compile('(^)?[^\S\n]*/(?:\*(.*?)\*/[^\S\n]*|/[^\n]*)($)?', re.DOTALL | re.MULTILINE)
 
-    #parser.add_option("-w", "--workspace",
-    #                  dest="workspace",
-    #                  help="branch to deploy")
 
-    parser.add_option("-c", "--configuration-file",
-                      dest="filename",
-                      default=False,
-                      help="configuration file")
+def parse_json(filename):
+    """ Parse a JSON file
+        First remove comments and then use the json module package
+        Comments look like :
+            // ...
+        or
+            /*
+            ...
+            */
+    """
+    with open(filename) as file_resource:
+        content = ''.join(file_resource.readlines())
 
-    (options, args) = parser.parse_args()
+        ## Looking for comments
+        match = comment_re.search(content)
+        while match:
+            # single line comment
+            content = content[:match.start()] + content[match.end():]
+            match = comment_re.search(content)
 
-    # Options
-    if options.filename:
-        config = load_configuration(options.filename)
-    else:
-        config = load_configuration()
+        pprint.pprint(json.loads(content))
 
-    # Check args passed
-    if not len(args) or len(args) != 2:
-        print parser.usage
-        sys.exit(1)
-
-    # retrieve command and branch
-    command = args[0]
-    branch = args[1]
-
-    # check command
-    if command not in ["build", "deploy", "stage", "test"]:
-        print parser.usage
-        sys.exit(1)
-
-    # Run task
-    if command == "build":
-        return build(branch)
-    elif command == "deploy":
-        return deploy()
-    elif command == "test":
-        return test(branch)
-    elif command == "stage":
-        return stage(branch)
+        # Return json file
+        return json.loads(content)
 
 
 def build(branch):
@@ -116,12 +98,57 @@ def stage(branch):
     pass
 
 
-def load_configuration(filename="flow.json"):
-    if not os.path.isfile(filename):
-        print red("config: unable to load %s" % filename)
-        sys.exit(2)
-    return json.loads(open(filename).read())
+def main():
+    parser = OptionParser()
 
+    parser.usage = "flow <command> [<branch>]\n\n\
+The most commonly command used flow commands are:\n\
+    build   Build package based on branch\n\
+    deploy  Deploy master branch to production\n\
+    test    Test a branch\n\
+    stage   Create or synchronise stage environment on branch"
+
+    #parser.add_option("-w", "--workspace",
+    #                  dest="workspace",
+    #                  help="branch to deploy")
+
+    parser.add_option("-c", "--configuration-file",
+                      dest="filename",
+                      default="flow.json",
+                      help="configuration file")
+
+    (options, args) = parser.parse_args()
+
+    # Options
+    if options.filename:
+        config = parse_json(options.filename)
+    else:
+        print red("flow.json is missing")
+        sys.exit(1)
+
+    # Check args passed
+    if not len(args) or len(args) != 2:
+        print parser.usage
+        sys.exit(1)
+
+    # retrieve command and branch
+    command = args[0]
+    branch = args[1]
+
+    # check command
+    if command not in ["build", "deploy", "stage", "test"]:
+        print parser.usage
+        sys.exit(1)
+
+    # Run task
+    if command == "build":
+        return build(branch)
+    elif command == "deploy":
+        return deploy()
+    elif command == "test":
+        return test(branch)
+    elif command == "stage":
+        return stage(branch)
 
 
 # Run main function

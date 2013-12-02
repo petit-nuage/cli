@@ -14,13 +14,13 @@
 					"hostname": "localhost",
 					"username": "root",
 					"password": "",
-					"port": 3306,
+					"port": 3306
 				},
 				"couchdb": {
 					"hostname": "localhost",
 					"username": "",
 					"password": "",
-					"port": 5984,
+					"port": 5984
 				}
 			}
 		}
