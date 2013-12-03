@@ -1,49 +1,19 @@
-import json
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import argparse
 from optparse import OptionParser
-import os
-import re
 import sys
 
-from git import *
+#from git import *
 #from fabric.colors import red, green, blue, white
 from fabric import utils
 from fabric.colors import *
 
 import flow
+import config
 
 import pprint
-
-# Parse a JSON file with comments
-# http://www.lifl.fr/~riquetd/parse-a-json-file-with-comments.html
-
-# Regular expression for comments
-comment_re = re.compile('(^)?[^\S\n]*/(?:\*(.*?)\*/[^\S\n]*|/[^\n]*)($)?', re.DOTALL | re.MULTILINE)
-
-
-def parse_json(filename):
-    """ Parse a JSON file
-        First remove comments and then use the json module package
-        Comments look like :
-            // ...
-        or
-            /*
-            ...
-            */
-    """
-    with open(filename) as file_resource:
-        content = ''.join(file_resource.readlines())
-
-        ## Looking for comments
-        match = comment_re.search(content)
-        while match:
-            # single line comment
-            content = content[:match.start()] + content[match.end():]
-            match = comment_re.search(content)
-
-        #pprint.pprint(json.loads(content))
-
-        # Return json file
-        return json.loads(content)
 
 
 def build(branch):
@@ -80,6 +50,12 @@ def stage(configuration, branch="develop"):
         # Create workspace
         if not flow.workspace.create(configuration, "stage", branch):
             utils.puts(red("unable to create workspace for %s" % branch))
+            return False
+
+        utils.puts(green("workspace for %s branch created" % branch))
+
+        if not flow.repository.clone(configuration, "stage", branch):
+            utils.puts(red("unable to clone %s for %s" % (configuration["project"]["repository"], branch)))
             return False
 
         utils.puts(green("workspace for %s branch created" % branch))
@@ -122,7 +98,7 @@ def unstage(configuration, branch="develop"):
 
 
 def main():
-    parser = OptionParser()
+    parser = argparse.ArgumentParser()
 
     parser.usage = "flow <command> [<branch>]\n\n\
 The most commonly command used flow commands are:\n\
@@ -131,53 +107,48 @@ The most commonly command used flow commands are:\n\
     test    Test a branch\n\
     stage   Create or synchronise stage environment on branch"
 
-    #parser.add_option("-w", "--workspace",
-    #                  dest="workspace",
-    #                  help="branch to deploy")
+    parser.add_argument("command",
+                        choices=config.commands,
+                        help="command to execute")
 
-    parser.add_option("-c", "--configuration-file",
-                      dest="filename",
-                      default="flow.json",
-                      help="configuration file")
+    parser.add_argument("branch",
+                        help="branch to use")
 
-    (options, args) = parser.parse_args()
+    parser.add_argument("--config",
+                        default="flow.json",
+                        help="json file to use as configuration")
+
+    args = parser.parse_args()
 
     # Options
-    if options.filename:
-        config = parse_json(options.filename)
+    if args.config:
+        with open(args.config) as file_resource:
+            configuration = flow.utils.load_configuration(file_resource)
+
     else:
         print red("flow.json is missing")
         sys.exit(1)
 
-    # Check args passed
-    if not len(args) or len(args) != 2:
-        print parser.usage
-        sys.exit(1)
-
-    # retrieve command and branch
-    command = args[0]
-    branch = args[1]
-
     # check command
-    if command not in ["build", "deploy", "stage", "test", "unstage"]:
+    if args.command not in config.commands:
         print parser.usage
         sys.exit(1)
 
     # Run task
-    if command == "build":
-        return build(config, branch)
+    if args.command == "build":
+        return build(configuration, args.branch)
 
-    elif command == "deploy":
-        return deploy(config)
+    elif args.command == "deploy":
+        return deploy(configuration)
 
-    elif command == "stage":
-        return stage(config, branch)
+    elif args.command == "stage":
+        return stage(configuration, args.branch)
 
-    elif command == "test":
-        return test(config, branch)
+    elif args.command == "test":
+        return test(configuration, args.branch)
 
-    elif command == "unstage":
-        return unstage(config, branch)
+    elif args.command == "unstage":
+        return unstage(configuration, args.branch)
 
 
 # Run main function

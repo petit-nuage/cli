@@ -63,4 +63,15 @@ def push(branch="develop"):
 
 
 def clone(configuration, env, branch="develop"):
-    pass
+    api = load_configuration(configuration, env)
+    branch_slug = get_branch_slug(branch)
+    workspace_path = get_workspace_path(configuration, env) + "/" + branch_slug
+
+    if api.env.role == "local":
+        api.local("git clone %s" % configuration["project"]["repository"])
+        return True
+
+    else:
+        with api.cd(workspace_path):
+            api.run("git clone %s" % configuration["project"]["repository"])
+            return True

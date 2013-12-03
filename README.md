@@ -4,6 +4,7 @@
 
 - Python 2.7
 - Fabric
+- Pystache
 
 - Docker 0.7
 
