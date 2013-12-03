@@ -74,7 +74,8 @@ def create(configuration, env, branch="develop"):
 
         else:
             with api.cd(workspace_path):
-                return api.run("mkdir %s" % branch_slug)
+                api.run("mkdir %s" % branch_slug)
+                return True
 
 
 def delete(configuration, env, branch="develop"):

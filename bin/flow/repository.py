@@ -31,26 +31,21 @@ def load_configuration(configuration, env):
 
 
 def synchronize(configuration, env, branch="develop"):
-    api = load_configuration(configuration, env)
-    branch_slug = get_branch_slug(branch)
-    workspace_path = get_workspace_path(configuration, env, branch_slug)
-
     push(branch)
 
     if workspace.exists(configuration, env, branch):
-        with api.cd(workspace_path):
-            pull(configuration, env, branch)
-            return True
-    else:
-        return False
+        pull(configuration, env, branch)
+        return True
 
-    return True
+    else:
+        utils.puts("unable to pull %s" % branch)
+        return False
 
 
 def pull(configuration, env, branch="develop"):
     api = load_configuration(configuration, env)
     branch_slug = get_branch_slug(branch)
-    workspace_path = get_workspace_path(configuration, env, branch_slug)
+    workspace_path = get_workspace_path(configuration, env) + "/" + branch_slug
 
     if api.env.role == "local":
         api.local("git pull origin %s" % branch)

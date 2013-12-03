@@ -74,31 +74,31 @@ def stage(configuration, branch="develop"):
 
     # Check workspace existence
     if not flow.workspace.exists(configuration, "stage", branch):
-        print utils.puts(yellow("stage: workspace for %s does not exist" % branch))
-        print blue("stage: create workspace for %s" % branch)
+        utils.puts(yellow("workspace for %s does not exist" % branch))
+        utils.puts("create workspace for %s" % branch)
 
         # Create workspace
         if not flow.workspace.create(configuration, "stage", branch):
-            print red("stage: unable to create workspace for %s" % branch)
+            utils.puts(red("unable to create workspace for %s" % branch))
             return False
 
-        print green("stage: workspace for %s branch created" % branch)
+        utils.puts(green("workspace for %s branch created" % branch))
 
         # Bake configuration
-        if not flow.baker.configure("stage"):
-            print red("stage: can not install configuration for %s" % branch)
+        if not flow.baker.cook(configuration, "stage", branch):
+            utils.puts(red("can not install configuration for %s" % branch))
             return False
 
-        print green("stage: configuration installed for %s created" % branch)
+        utils.puts(green("configuration installed for %s created" % branch))
 
-    utils.puts(blue("stage: synchronize repository for %s" % branch))
+    utils.puts("synchronize repository for %s" % branch)
 
     if flow.repository.synchronize(configuration, "stage", branch):
-        print utils.puts(green("stage: %s synchronized" % branch))
+        utils.puts(green("%s synchronized" % branch))
         return False
 
     else:
-        print red("stage: can not synchronize %s" % branch)
+        utils.puts(red("can not synchronize %s" % branch))
         return True
 
 
@@ -109,12 +109,15 @@ def unstage(configuration, branch="develop"):
 
     # Check workspace existence
     if not flow.workspace.exists(configuration, "stage", branch):
+        utils.puts(yellow("workspace for %s does not exist" % branch))
         return False
 
     # Remove workspace
     if not flow.workspace.delete(configuration, "stage", branch):
+        utils.puts(red("unable to remove workspace for %s" % branch))
         return False
 
+    utils.puts(green("workspace for %s branch removed" % branch))
     return True
 
 
