@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-from optparse import OptionParser
 import sys
 
 #from git import *
@@ -105,7 +104,8 @@ The most commonly command used flow commands are:\n\
     build   Build package based on branch\n\
     deploy  Deploy master branch to production\n\
     test    Test a branch\n\
-    stage   Create or synchronise stage environment on branch"
+    stage   Create or synchronise stage environment for branch\
+    unstage   Remove stage environment for branch"
 
     parser.add_argument("command",
                         choices=config.commands,
