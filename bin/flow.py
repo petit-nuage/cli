@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-from optparse import OptionParser
 import sys
 
 #from git import *
