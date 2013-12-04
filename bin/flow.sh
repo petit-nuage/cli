@@ -1,2 +1,4 @@
 BIN_PATH="/var/www/workspace/github/flow/bin"
-alias flow="python $BIN_PATH/flow.py"
+RECIPES_PATH="/var/www/workspace/github/flow/bin/recipes"
+
+alias flow="python $BIN_PATH/flow.py --recipes=$RECIPES_PATH"
