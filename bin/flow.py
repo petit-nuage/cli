@@ -118,12 +118,15 @@ The most commonly command used flow commands are:\n\
                         default="flow.json",
                         help="json file to use as configuration")
 
+    parser.add_argument("--recipes",
+                        help="recipes path")
+
     args = parser.parse_args()
 
     # Options
     if args.config:
         with open(args.config) as file_resource:
-            configuration = flow.utils.load_configuration(file_resource)
+            configuration = flow.utils.configure(file_resource)
 
     else:
         print red("flow.json is missing")
