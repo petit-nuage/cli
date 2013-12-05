@@ -36,7 +36,7 @@ def test(branch):
     pass
 
 
-def stage(configuration, branch="develop"):
+def stage(configuration, recipes, branch="develop"):
     """
     Create or synchronise stage environment on branch
     """
@@ -60,21 +60,23 @@ def stage(configuration, branch="develop"):
         utils.puts(green("workspace for %s branch created" % branch))
 
         # Bake configuration
-        if not flow.baker.cook(configuration, "stage", branch):
+        if not flow.baker.bake(configuration, recipes, "stage", branch):
             utils.puts(red("can not install configuration for %s" % branch))
             return False
 
         utils.puts(green("configuration installed for %s created" % branch))
 
-    utils.puts("synchronize repository for %s" % branch)
-
-    if flow.repository.synchronize(configuration, "stage", branch):
-        utils.puts(green("%s synchronized" % branch))
-        return False
-
     else:
-        utils.puts(red("can not synchronize %s" % branch))
-        return True
+
+        utils.puts("synchronize repository for %s" % branch)
+
+        if flow.repository.synchronize(configuration, "stage", branch):
+            utils.puts(green("%s synchronized" % branch))
+            return True
+
+        else:
+            utils.puts(red("can not synchronize %s" % branch))
+            return False
 
 
 def unstage(configuration, branch="develop"):
@@ -139,16 +141,16 @@ The most commonly command used flow commands are:\n\
 
     # Run task
     if args.command == "build":
-        return build(configuration, args.branch)
+        return build(configuration, args.recipes, args.branch)
 
     elif args.command == "deploy":
-        return deploy(configuration)
+        return deploy(configuration, args.recipes)
 
     elif args.command == "stage":
-        return stage(configuration, args.branch)
+        return stage(configuration, args.recipes, args.branch)
 
     elif args.command == "test":
-        return test(configuration, args.branch)
+        return test(configuration, args.recipes, args.branch)
 
     elif args.command == "unstage":
         return unstage(configuration, args.branch)

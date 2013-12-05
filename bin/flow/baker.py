@@ -3,9 +3,13 @@
 
 import os
 import sys
-from fabric import api, colors, utils
+from fabric import api, colors
+from fabric.utils import puts as output
 import fabric.contrib.files as ffiles
 import workspace
+import pystache
+
+import utils
 
 import pprint
 
@@ -13,68 +17,65 @@ import pprint
 api.env.use_ssh_config = True
 
 
-def get_workspace_path(configuration, env):
-    return str(configuration[env]["workspace"] + "/" + configuration["project"]["name"])
+def fabric_initer(configuration, env):
+    """
+    Fabric Initer
 
+    Set Fabric api env vars
+        - configuration
+        - env
+    """
 
-def get_workspace_branch_path(configuration, env, branch_slug):
-    return str(configuration[env]["workspace"] + "/" + configuration["project"]["name"] + "/" + branch_slug)
-
-
-def get_branch_slug(branch):
-    return branch.replace("/", "_")
-
-
-def clean_json_object(json_object):
-    data = {}
-    for row in json_object:
-        data[str(row)] = str(json_object[row])
-
-    return data
-
-
-def get_app(configuration, env):
-    app = {}
-    app["type"] = str(configuration[env]["app"]["type"])
-    app["web"] = str(configuration[env]["app"]["web"])
-
-    app["databases"] = {}
-    for db in configuration[env]["app"]["databases"]:
-        db_key = str(db)
-        app["databases"][db_key] = clean_json_object(configuration[env]["app"]["databases"][db_key])
-
-    return app
-
-
-def load_configuration(configuration, env):
     api.env.role = env
     api.env.roledefs = configuration["roles"]
-    api.env.hosts = str(configuration[env]["host"])
-    api.env.host_string = str(configuration[env]["host"])
+    api.env.hosts = str(configuration["roles"][env])
+    api.env.host_string = str(configuration["roles"][env])
+
     return api
 
 
-def cook(configuration, env, branch="develop"):
-    api = load_configuration(configuration, env)
-    branch_slug = get_branch_slug(branch)
-    workspace_path = get_workspace_path(configuration, env)
+def bake(configuration, recipes, env, branch="develop"):
+    """
+    Bake
+    branch
 
-    app_config = get_app(configuration, env)
+    Bake
+    """
 
-    if install(app_config):
+    # Init Fabric
+    fabric_initer(configuration, env)
+
+    # Params
+    branch_slug = utils.slugify(branch)
+    workspace_path = utils.get_workspace_path(configuration, env, branch)
+
+    if install(configuration, recipes, env, branch):
         return True
 
     return False
 
 
-def install(app_config):
+def install(configuration, recipes, env, branch):
     apps = ["cakephp", "angularjs", "flask"]
 
-    if app_config["type"] in apps:
-        if app_config["type"] == "angularjs":
+    if configuration[env]["app"]["type"] in apps:
+        if configuration[env]["app"]["type"] == "angularjs":
             return True
 
-        elif app_config["type"] == "cakephp":
+        elif configuration[env]["app"]["type"] == "cakephp":
+
+            web = {
+                "domain": utils.slugify(configuration["project"]["name"]) + "." +
+                utils.slugify(branch, "--") + "." + configuration[env]["host"]
+            }
+
+            with open(recipes + "/app/cakephp/database.php") as fileout_resource:
+                fileout = pystache.render(fileout_resource.read(), web)
+                pprint.pprint(fileout_resource.read())
+                pprint.pprint(web)
+
+            add_file(configuration, env, branch, fileout)
+
             # Mustache recipes
             print "pystache"
             return True
@@ -85,5 +86,27 @@ def install(app_config):
         else:
             return False
 
+    return False
+
+
+def add_file(configuration, env, branch, fileout):
+    """
+    Add file
+    configuration
+    env
+    branch
+    fileout
+
+    Bake
+    """
+
+    # Init Fabric
+    fabric_initer(configuration, env)
+
+    # Params
+    branch_slug = utils.slugify(branch)
+    workspace_path = utils.get_workspace_path(configuration, env, branch)
+
+    pprint.pprint(fileout)
 
     return False
