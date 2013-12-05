@@ -1,6 +1,6 @@
 import os
 import sys
-from fabric import api, colors, utils
+from fabric import api, colors
 from fabric.utils import puts as output
 import fabric.contrib.files as ffiles
 import workspace
@@ -24,8 +24,8 @@ def fabric_initer(configuration, env):
 
     api.env.role = env
     api.env.roledefs = configuration["roles"]
-    api.env.hosts = str(configuration[env]["host"])
-    api.env.host_string = str(configuration[env]["host"])
+    api.env.hosts = str(configuration["roles"][env])
+    api.env.host_string = str(configuration["roles"][env])
 
     return api
 

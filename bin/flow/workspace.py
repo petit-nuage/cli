@@ -23,8 +23,8 @@ def get_branch_slug(branch):
 def load_configuration(configuration, env):
     api.env.role = env
     api.env.roledefs = configuration["roles"]
-    api.env.hosts = str(configuration[env]["host"])
-    api.env.host_string = str(configuration[env]["host"])
+    api.env.hosts = str(configuration["roles"][env])
+    api.env.host_string = str(configuration["roles"][env])
     return api
 
 
