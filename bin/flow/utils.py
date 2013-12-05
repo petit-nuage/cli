@@ -6,12 +6,12 @@ import json
 import re
 
 
-def slugify(word):
+def slugify(word, glue="_"):
     """
     Slugify string
     """
 
-    return word.replace("/", "_")
+    return word.replace("/", glue)
 
 
 def configure(file_resource):
