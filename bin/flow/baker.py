@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -6,8 +5,10 @@ import sys
 from fabric import api, colors
 from fabric.utils import puts as output
 import fabric.contrib.files as ffiles
-import workspace
 import pystache
+
+import workspace
+import server
 
 import utils
 
@@ -89,7 +90,7 @@ def install(configuration, recipes, env, branch):
                     link_domain(configuration, env, workspace_path_link, filename)
 
                     # Symbolic link
-                    service_nginx_reload(configuration, env)
+                    server.nginx_reload_service(configuration, env + "_root")
 
             # Create cakephp database
             with open(recipes + "/app/cakephp/database.php") as fileout_resource:
@@ -158,12 +159,3 @@ def link_domain(configuration, env, workspace_path_link, filename):
                 api.run("ln -s ../sites-available/%s" % filename)
 
 
-def service_nginx_reload(configuration, env):
-    fabric_initer(configuration, env)
-
-    if api.env.role == "local":
-        return False
-
-    else:
-        #api.run("/etc/init.d/nginx reload")
-        return True
