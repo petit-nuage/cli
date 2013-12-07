@@ -58,11 +58,11 @@ class DATABASE_CONFIG {
 	public $default = array(
 		'datasource' => 'Database/Mysql',
 		'persistent' => false,
-		'host' => '{{hostname}}',
-		'login' => '{{username}}',
-		'password' => '{{password}}',
-		'database' => '{{database}}',
+		'host' => '{{default::hostname}}',
+		'login' => '{{default:username}}',
+		'password' => '{{default:password}}',
+		'database' => '{{default:database}}',
 		'prefix' => '',
-		'encoding' => '{{encoding}}',
+		'encoding' => '{{default:encoding}}',
 	);
 }
