@@ -84,16 +84,13 @@ def unstage(configuration, branch="develop"):
     """
 
     # Check workspace existence
-    if not flow.workspace.exists(configuration, "stage", branch):
-        utils.puts(yellow("workspace for %s does not exist" % branch))
-        return False
+    if flow.workspace.delete(configuration, "stage", branch):
+        utils.puts(green("workspace for %s branch removed" % branch))
 
-    # Remove workspace
-    if not flow.workspace.delete(configuration, "stage", branch):
-        utils.puts(red("unable to remove workspace for %s" % branch))
-        return False
+    # Remove domain
+    if flow.domain.remove(configuration, "stage", branch):
+        utils.puts(green("domain for %s branch removed" % branch))
 
-    utils.puts(green("workspace for %s branch removed" % branch))
     return True
 
 

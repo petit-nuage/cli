@@ -70,7 +70,7 @@ def install(configuration, recipes, env, branch):
             web = {
                 "domain": utils.slugify(configuration["project"]["name"]) + "." +
                 utils.slugify(branch, "--") + "." + configuration[env]["host"],
-                "root_path": configuration[env]["workspace"] + "/" + configuration["project"]["name"]
+                "root_path": configuration[env]["workspace"] + "/" + configuration["project"]["name"] + "/" + branch
             }
             pprint.pprint(web)
 
@@ -92,9 +92,11 @@ def install(configuration, recipes, env, branch):
                     # Symbolic link
                     server.nginx_reload_service(configuration, env + "_root")
 
+            databases = configuration[env]["app"]["databases"]
             # Create cakephp database
             with open(recipes + "/app/cakephp/database.php") as fileout_resource:
-                fileout = pystache.render(fileout_resource.read(), web)
+                pprint.pprint(databases)
+                fileout = pystache.render(fileout_resource.read(), databases)
 
                 workspace_path = configuration[env]["workspace"] + "/" + configuration["project"]["name"] + \
                     "/" + utils.slugify(branch) + "/app/Config"
@@ -157,5 +159,3 @@ def link_domain(configuration, env, workspace_path_link, filename):
         with api.cd(workspace_path_link):
             if not ffiles.exists(filename):
                 api.run("ln -s ../sites-available/%s" % filename)
-
-
