@@ -55,14 +55,29 @@
  */
 class DATABASE_CONFIG {
 
+	{{#default}}
 	public $default = array(
 		'datasource' => 'Database/Mysql',
 		'persistent' => false,
-		'host' => '{{default::hostname}}',
-		'login' => '{{default:username}}',
-		'password' => '{{default:password}}',
-		'database' => '{{default:database}}',
+		'host' => '{{hostname}}',
+		'login' => '{{username}}',
+		'password' => '{{password}}',
+		'database' => '{{database}}',
 		'prefix' => '',
-		'encoding' => '{{default:encoding}}',
+		'encoding' => '{{encoding}}',
 	);
+	{{/default}}
+
+	{{#couchdb}}
+	public $couchdb = array(
+		'datasource'    => 'CouchDB.CouchDBSource',
+		'persistent' => false,
+		'host' => '{{hostname}}',
+		'login' => '{{username}}',
+		'password' => '{{password}}',
+		'database' => '{{database}}',
+		'prefix' => '',
+		'encoding' => '{{encoding}}',
+	);
+	{{/couchdb}}
 }
