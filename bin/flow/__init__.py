@@ -63,14 +63,14 @@ def stage(configuration, recipes, branch="develop"):
             return unstage(configuration, branch)
         f_utils.puts(f_colors.green("configuration installed for %s created" % branch))
 
-        return True
+        return f_utils.puts(f_colors.green("http://%s" % utils.get_domain_filename(configuration, "stage", branch)))
 
     else:
         f_utils.puts("synchronize repository for %s" % branch)
 
         if repository.synchronize(configuration, "stage", branch):
             f_utils.puts(f_colors.green("%s synchronized" % branch))
-            return True
+            return f_utils.puts(f_colors.green("http://%s" % utils.get_domain_filename(configuration, "stage", branch)))
         else:
             f_utils.puts(f_colors.red("can not synchronize %s" % branch))
             return False

@@ -66,8 +66,9 @@ def install(configuration, recipes, env, branch):
         with open(recipes + "/web/nginx_cakephp/domain.conf") as fileout_resource:
             data = {
                 "domain": utils.slugify(configuration["project"]["name"]) + "." +
-                utils.slugify(branch, "--") + "." + configuration[env]["host"],
-                "root_path": configuration[env]["workspace"] + "/" + configuration["project"]["name"] + "/" + branch
+                utils.slugify(branch) + "." + configuration[env]["host"],
+                "root_path": configuration[env]["workspace"] + "/" + configuration["project"]["name"] + "/"
+                + utils.slugify(branch)
             }
             fileout = pystache.render(fileout_resource.read(), data)
 
@@ -100,16 +101,17 @@ def install(configuration, recipes, env, branch):
             # Create cakephp database
             with open(recipes + "/app/cakephp/database.php") as fileout_resource:
                 databases = configuration[env]["app"]["databases"]
-                pprint.pprint(databases)
                 fileout = pystache.render(fileout_resource.read(), databases)
 
                 workspace_path = configuration[env]["workspace"] + "/" + configuration["project"]["name"] + \
                     "/" + utils.slugify(branch) + "/app/Config"
                 filename = workspace_path + "/database.php"
+
                 if add_file(configuration, env, branch, workspace_path, filename, fileout):
-                    print "ok"
+                    return True
                 else:
-                    print "fail"
+                    print False
+
             return True
 
         elif app_config["type"] == "flask":
@@ -142,13 +144,9 @@ def add_file(configuration, env, branch, workspace_path, filename, fileout):
         return False
 
     else:
-        if not workspace_path:
-            return False
-
-        else:
-            # Write file
-            ffiles.append(filename, fileout)
-            return True
+        # Write file
+        ffiles.append(filename, fileout)
+        return True
 
 
 def link_domain(configuration, env, workspace_path_link, filename):
