@@ -4,6 +4,8 @@
 import json
 import re
 
+domain_nginx = ["nginx", "nginx_cakephp"]
+
 
 def slugify(word, glue="_"):
     """
@@ -39,3 +41,18 @@ def get_workspace_path(configuration, env, branch=False):
     else:
         return configuration[env]["workspace"] + "/" + configuration["project"]["name"] + "/" + slugify(branch)
 
+
+def get_domain_path(configuration, env):
+    if configuration[env]["app"]["web"] in domain_nginx:
+        return "/etc/nginx"
+
+    else:
+        return False
+
+
+def get_domain_filename(configuration, env, branch=False):
+    if not branch:
+        return configuration["project"]["name"] + "." + configuration[env]["host"]
+
+    else:
+        return configuration["project"]["name"] + "." + slugify(branch, "--") + "." + configuration[env]["host"]
