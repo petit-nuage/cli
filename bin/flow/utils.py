@@ -63,4 +63,4 @@ def get_recipe_filename(configuration, env, branch=False):
         return configuration["project"]["name"] + "." + configuration[env]["host"]
 
     else:
-        return configuration["project"]["name"] + "." + slugify(branch, "--") + "." + configuration[env]["host"]
+        return configuration["project"]["name"] + "." + slugify(branch) + "." + configuration[env]["host"]
