@@ -1,14 +1,6 @@
 # -*- coding: utf-8 -*-
-import os
-import sys
-from fabric import api, colors
-from fabric.utils import puts as output
+from fabric import api
 import fabric.contrib.files as ffiles
-import workspace
-
-import utils
-
-import pprint
 
 # Environment information
 api.env.use_ssh_config = True
@@ -52,5 +44,3 @@ def nginx_link_domain(configuration, env, workspace_path_link, filename):
         with api.cd(workspace_path_link):
             if not ffiles.exists(filename):
                 api.run("ln -s ../sites-available/%s" % filename)
-
-
