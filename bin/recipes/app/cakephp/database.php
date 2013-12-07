@@ -64,6 +64,7 @@ class DATABASE_CONFIG {
 		'password' => '{{password}}',
 		'database' => '{{database}}',
 		'prefix' => '',
+		'port' => '{{port}}',
 		'encoding' => '{{encoding}}',
 	);
 	{{/default}}
@@ -77,6 +78,7 @@ class DATABASE_CONFIG {
 		'password' => '{{password}}',
 		'database' => '{{database}}',
 		'prefix' => '',
+		'port' => '{{port}}',
 		'encoding' => '{{encoding}}',
 	);
 	{{/couchdb}}
