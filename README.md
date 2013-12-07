@@ -4,6 +4,7 @@
 
 ```
 pip install fabric
+pip install pystache
 ```
 
 ## Installation
