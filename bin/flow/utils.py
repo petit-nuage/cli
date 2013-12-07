@@ -56,3 +56,11 @@ def get_domain_filename(configuration, env, branch=False):
 
     else:
         return configuration["project"]["name"] + "." + slugify(branch, "--") + "." + configuration[env]["host"]
+
+
+def get_recipe_filename(configuration, env, branch=False):
+    if not branch:
+        return configuration["project"]["name"] + "." + configuration[env]["host"]
+
+    else:
+        return configuration["project"]["name"] + "." + slugify(branch, "--") + "." + configuration[env]["host"]
