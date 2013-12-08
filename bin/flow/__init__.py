@@ -10,9 +10,6 @@ import utils
 import workspace
 
 
-commands = ["build", "deploy", "stage", "test", "unstage"]
-
-
 def build(branch):
     """
     Build package based on branch
