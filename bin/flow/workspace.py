@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -23,8 +22,8 @@ def get_branch_slug(branch):
 def load_configuration(configuration, env):
     api.env.role = env
     api.env.roledefs = configuration["roles"]
-    api.env.hosts = str(configuration[env]["host"])
-    api.env.host_string = str(configuration[env]["host"])
+    api.env.hosts = str(configuration["roles"][env])
+    api.env.host_string = str(configuration["roles"][env])
     return api
 
 
@@ -96,14 +95,11 @@ def delete(configuration, env, branch="develop"):
     workspace_path = get_workspace_path(configuration, env)
 
     if api.env.role == "local":
-        utils.puts(green("Nothing to do here..."))
         return False
 
     else:
 
         if exists(configuration, env, branch):
-            utils.puts(colors.green("workspace for %s exists" % branch))
-
             with api.cd(workspace_path):
                 api.run("rm -Rf %s" % branch_slug)
                 return True

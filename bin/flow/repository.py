@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
+
 import os
 import sys
-from fabric import api, colors, utils
+from fabric import api, colors
 from fabric.utils import puts as output
 import fabric.contrib.files as ffiles
 import workspace
@@ -24,8 +26,8 @@ def fabric_initer(configuration, env):
 
     api.env.role = env
     api.env.roledefs = configuration["roles"]
-    api.env.hosts = str(configuration[env]["host"])
-    api.env.host_string = str(configuration[env]["host"])
+    api.env.hosts = str(configuration["roles"][env])
+    api.env.host_string = str(configuration["roles"][env])
 
     return api
 
@@ -121,10 +123,9 @@ def clone(configuration, env, branch):
     workspace_path = utils.get_workspace_path(configuration, env, branch)
 
     if api.env.role == "local":
-        api.local("git clone %s ." % configuration["project"]["repository"])
-        return True
+        return False
 
     else:
         with api.cd(workspace_path):
-            api.run("git clone %s ." % configuration["project"]["repository"])
+            api.run("git clone --depth 1 %s -b %s ." % (configuration["project"]["repository"], branch))
             return True
