@@ -42,7 +42,7 @@ The most commonly command used flow commands are:\n\
             configuration = flow.utils.configure(file_resource)
 
     else:
-        print red("flow.json is missing")
+        print "flow.json is missing"
         sys.exit(1)
 
     # check command
