@@ -3,15 +3,10 @@
 import argparse
 import sys
 
-#from git import *
-#from fabric.colors import red, green, blue, white
-from fabric import utils
-from fabric.colors import *
-
 import flow
 
 
-commands = ["build", "deploy", "stage", "test", "unstage"]
+commands = ["stage", "unstage"]
 
 
 def main():
@@ -47,7 +42,7 @@ The most commonly command used flow commands are:\n\
             configuration = flow.utils.configure(file_resource)
 
     else:
-        print red("flow.json is missing")
+        print "flow.json is missing"
         sys.exit(1)
 
     # check command
