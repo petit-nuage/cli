@@ -13,7 +13,7 @@ pip install pystache
 2. ```source bin/flow.sh```
 3. Write your configuration file
 
-## Configuration file
+## Configuration file (default: flow.json)
 
 ```json
 {
