@@ -12,13 +12,17 @@ commands = ["stage", "unstage"]
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.usage = "flow <command> [<branch>]\n\n\
+    parser.usage = "flow <command> <branch> [--config] [--recipes]\n\n\
 The most commonly command used flow commands are:\n\
-    build   Build package based on branch\n\
-    deploy  Deploy master branch to production\n\
-    test    Test a branch\n\
-    stage   Create or synchronise stage environment for branch\
-    unstage   Remove stage environment for branch"
+    build     Build package based on branch\n\
+    deploy    Deploy master branch to production\n\
+    test      Test a branch\n\
+    stage     Create or synchronise stage environment for branch\n\
+    unstage   Remove stage environment for branch\n\n\
+    branch    Your branch\n\n\
+Options:\n\
+    --config  Configuration's file in your repository (default: flow.json)\n\
+    --recipes Recipe path"
 
     parser.add_argument("command",
                         choices=commands,
