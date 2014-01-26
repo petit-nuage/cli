@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from fabric import utils as f_utils
 from fabric import colors as f_colors
 

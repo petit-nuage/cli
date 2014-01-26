@@ -47,18 +47,6 @@ class CommonModel(models.Model):
         abstract = True
 
 
-class Server(CommonModel):
-    hostname = models.CharField(max_length=255)
-    username = models.CharField(max_length=255)
-    password = models.CharField(max_length=255)
-    ssh_key = models.CharField(max_length=255)
-
-    class Meta:
-        ordering = ['-status', 'hostname', 'username']
-        verbose_name = 'server'
-        verbose_name_plural = 'servers'
-
-
 class Build(CommonModel):
     version = models.CharField(max_length=255)
 
@@ -88,24 +76,6 @@ class Domain(CommonModel):
         verbose_name_plural = 'domains'
 
 
-class Repository(CommonModel):
-    url = models.CharField(max_length=255)
-
-    class Meta:
-        ordering = ['-status', 'name']
-        verbose_name = 'repository'
-        verbose_name_plural = 'repositories'
-
-
-class Workspace(CommonModel):
-    path = models.CharField(max_length=255)
-
-    class Meta:
-        ordering = ['-status', 'name']
-        verbose_name = 'workspace'
-        verbose_name_plural = 'workspaces'
-
-
 class Recipe(CommonModel):
     type = models.ForeignKey('RecipeType')
 
@@ -121,3 +91,38 @@ class RecipeType(CommonModel):
         ordering = ['-status', 'name']
         verbose_name = 'recipe type'
         verbose_name_plural = 'recipe types'
+
+
+class Repository(CommonModel):
+    url = models.CharField(max_length=255)
+    slug = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        ordering = ['-status', 'name']
+        verbose_name = 'repository'
+        verbose_name_plural = 'repositories'
+
+
+class Server(CommonModel):
+    hostname = models.CharField(max_length=255)
+    username = models.CharField(max_length=255)
+    password = models.CharField(max_length=255, blank=True, null=True)
+    ssh_key = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        ordering = ['-status', 'hostname', 'username']
+        verbose_name = 'server'
+        verbose_name_plural = 'servers'
+
+
+class Workspace(CommonModel):
+    path = models.CharField(max_length=255)
+    repository = models.ForeignKey('Repository')
+    domain = models.ForeignKey('Domain')
+    server = models.ForeignKey('Server')
+    branch = models.CharField(max_length=255, default='develop')
+
+    class Meta:
+        ordering = ['-status', 'name']
+        verbose_name = 'workspace'
+        verbose_name_plural = 'workspaces'
