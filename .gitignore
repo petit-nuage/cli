@@ -2,3 +2,4 @@
 /tags
 .ideas
 *.pyc
+db.sqlite3
