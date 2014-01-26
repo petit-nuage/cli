@@ -1,68 +1,96 @@
-# flow
+# How to use
 
-## Requirements
+## Python requirements
 
-- PHP 5.3
-- PEAR Installer
-- PHPUnit
-- PHP Mess Detector
-- PHP Code Sniffer
-- PHPLOC
-- PHP Copy,Paste Detector (PHPCPD)
-- Beanstalkd 1.4.6
+```
+pip install fabric
+pip install pystache
+```
 
-### PEAR Installer
+## Installation
 
-    pear config-set auto_discover 1
+1. Just pull this repository
+2. ```source bin/flow.sh```
+3. Write your configuration file
 
-### PHPUnit - http://www.phpunit.de/
+## Configuration file
 
-PHPUnit is the de-facto standard for unit testing in PHP projects. It provides
-both a framework that makes the writing of tests easy as well as the
-functionality to easily run the tests and analyse their results.
+```json
+{
+	// Project
+	"project": {
+		"name": "cake-blog",
+		"repository": "git@github.com:nicolasramy/cakephp-blog.git"
+	},
 
-    pear install pear.phpunit.de/PHPUnit
+	// Roles
+	"roles": {
+		"local": "localhost",
+		"test": "localhost",
+		"stage": "www-data@domain.dev",
+		"master": "www-data@domain.prod"
+	},
 
-### PHP Mess Detector - http://phpmd.org
+	// Environments
+	// Local
+	"local": {},
+	// Stage
+	"stage": {
+		"env": "stage",
+		"host": "www-data@domain.dev",
+		"workspace": "/var/www",
+		"app": {
+			"type": "cakephp",
+			"web": "nginx_phpfpm",
+			"databases": {
+				"default": {
+					"hostname": "localhost",
+					"username": "root",
+					"password": "",
+					"port": 3306
+				}
+			}
+		}
+	},
+	// Test
+	"test": {},
+	// Deploy
+	"deploy": {}
+}
+```
 
-PHPMD is a spin-off project of PHP Depend and aims to be a PHP equivalent of the
-well known Java tool PMD. PHPMD can be seen as an user friendly frontend
-application for the raw metrics stream measured by PHP Depend
+## Server requirements
 
-    pear channel-discover pear.phpmd.org
-    pear channel-discover pear.pdepend.org
-    pear install --alldeps phpmd/PHP_PMD
+- You have to push your ssh public key on your server for the correct user.
+- Create a virtual host configuration for your stage domain. (i.e. ASAP)
+- Add your public key on your git hosting provider
 
-### PHP Code Sniffer - http://pear.php.net/package/PHP_CodeSniffer/
+## man
+```
+flow command branch
 
-PHP_CodeSniffer tokenises PHP, JavaScript and CSS files and detects violations
-of a defined set of coding standards.
+The most commonly command used flow commands are:
+    build   Build package based on branch
+    deploy  Deploy master branch to production
+    test    Test a branch
+    stage   Create or synchronise stage environment for branch
+    unstage   Remove stage environment for branch
+```
 
-    pear install PHP_CodeSniffer
+# For instance
 
-### PHPLOC - https://github.com/sebastianbergmann/phploc
+Only __stage__ and __unstage__ work.
 
-phploc is a tool for quickly measuring the size and analyzing the structure of
-a PHP project.
+It's based on workspace and repository. This 2 sub modules do some stuffs with fabric. I'm really happy of this simplification of automation. System operations had never been so simple.
 
-    pear install pear.phpunit.de/phploc
+# Next step
 
-### PHP CPD - https://github.com/sebastianbergmann/phpcpd
+I have to finish the stage part. I want to add a configuration loader for specific application as:
 
-phpcpd is a Copy/Paste Detector (CPD) for PHP code.
+- CakePHP 2
+- Symfony 2
+- WordPress
+- AngularJS
+- Flask
 
-    pear install pear.phpunit.de/phpcpd
-
-### PHP Documentor 2 - http://www.phpdoc.org/
-
-phpDocumentor 2 is build to generate API documentation for all features
-available in PHP 5.3 and higher.
-
-    pear channel-discover pear.phpdoc.org
-    pear install phpdoc/phpDocumentor-alpha
-
-### Beanstalkd - http://
-
-description
-
-    apt-get install beanstalkd
+Prepare build command. What kind of test ? How to prepare a build and how to deploy it on master ...

@@ -1,0 +1,41 @@
+{
+    // Project
+    "project": {
+        "name": "cake-blog",
+        "repository": "git@github.com:nicolasramy/cakephp-blog.git"
+    },
+
+    // Roles
+    "roles": {
+        "local": "localhost",
+        "test": "localhost",
+        "stage": "www-data@domain.dev",
+        "master": "www-data@domain.prod"
+    },
+
+    // Environments
+    // Local
+    "local": {},
+    // Stage
+    "stage": {
+        "env": "stage",
+        "host": "www-data@domain.dev",
+        "workspace": "/var/www",
+        "app": {
+            "type": "cakephp",
+            "web": "nginx_phpfpm",
+            "databases": {
+                "default": {
+                    "hostname": "localhost",
+                    "username": "root",
+                    "password": "",
+                    "port": 3306
+                }
+            }
+        }
+    },
+    // Test
+    "test": {},
+    // Deploy
+    "deploy": {}
+}
