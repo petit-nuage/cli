@@ -7,10 +7,8 @@ from fabric import colors as f_colors
 import baker
 import domain
 import repository
-import test
 import utils
 import workspace
-
 
 commands = ["build", "deploy", "stage", "test", "unstage"]
 
