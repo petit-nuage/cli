@@ -34,6 +34,10 @@ def configure(file_resource):
     return json.loads(content)
 
 
+def flow_configuration():
+    pass
+
+
 def get_workspace_path(configuration, env, branch=False):
     if not branch:
         return configuration[env]["workspace"] + "/" + configuration["Project"]["name"]
